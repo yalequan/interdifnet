@@ -1,8 +1,0 @@
-numpy==2.3.3
-pandas
-tensorflow==2.20.0
-matplotlib
-scikit-multilearn
-scikit-learn
-seaborn
-networkx

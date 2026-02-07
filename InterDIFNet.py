@@ -31,30 +31,22 @@ import importlib.util
 
 
 def _check_package_installed(import_name):
-    """
-    Check if a package is installed.
+    """Check if a package is installed.
     
-    Parameters:
-    -----------
-    import_name : str
-        The name to use when importing
+    Args:
+        import_name (str): The name to use when importing.
         
     Returns:
-    --------
-    bool
-        True if installed, False otherwise
+        bool: True if installed, False otherwise.
     """
     return importlib.util.find_spec(import_name) is not None
 
 
 def _install_packages(packages_to_install):
-    """
-    Install a list of packages.
+    """Install a list of packages.
     
-    Parameters:
-    -----------
-    packages_to_install : list of tuples
-        List of (package_name, import_name) tuples to install
+    Args:
+        packages_to_install (list of tuple): List of (package_name, import_name) tuples to install.
     """
     print("\nInstalling packages...")
     for package_name, import_name in packages_to_install:
@@ -99,7 +91,7 @@ if missing_packages:
     for package_name, _ in missing_packages:
         print(f"  - {package_name}")
     
-    print(f"You can install them by running:")
+    print("You can install them by running:")
     print(f"  pip install {' '.join([pkg for pkg, _ in missing_packages])}")
     
     print("\nWould you like to install them automatically now? (y/n): ", end="", flush=True)
@@ -147,6 +139,18 @@ from pathlib import Path  # noqa: E402
 # Loss Function
 
 def focal_loss(gamma=2., alpha=0.25):
+    """Create focal loss function for handling class imbalance.
+    
+    Focal loss down-weights easy examples and focuses on hard negatives,
+    useful for imbalanced classification problems.
+    
+    Args:
+        gamma (float, optional): Focusing parameter for modulating loss. Defaults to 2.0.
+        alpha (float, optional): Weighting factor in range [0,1]. Defaults to 0.25.
+        
+    Returns:
+        function: Loss function that takes y_true and y_pred as arguments.
+    """
     def loss(y_true, y_pred):
         epsilon = K.epsilon()
         y_pred = K.clip(y_pred, epsilon, 1. - epsilon)
@@ -159,24 +163,19 @@ def focal_loss(gamma=2., alpha=0.25):
 
 # Model Creation
 def build_separate_models(groups, n_inputs, n_outputs_per_set, loss):
-    """
-    Build completely separate models for each label set.
+    """Build completely separate models for each label set.
     
-    Parameters:
-    -----------
-    groups : str
-        String indicating number of groups (e.g., "Ten", "Three", "Two")
-    n_inputs : int
-        Number of input features
-    n_outputs_per_set : int
-        Number of outputs per model
-    loss : str
-        Loss function ("focal_loss", "binary_crossentropy")
+    Creates two independent neural network models for detecting non-uniform (DIF_a)
+    and uniform (DIF_b) differential item functioning.
+    
+    Args:
+        groups (str): String indicating number of groups (e.g., "Ten", "Three", "Two").
+        n_inputs (int): Number of input features.
+        n_outputs_per_set (int): Number of outputs per model.
+        loss (str): Loss function ("focal_loss" or "binary_crossentropy").
     
     Returns:
-    --------
-    tuple
-        (model_set1, model_set2) - Two compiled Keras models
+        tuple: (model_set1, model_set2) - Two compiled Keras models.
     """
     if loss == "focal_loss":
         def create_single_model(name_suffix=""):
@@ -277,24 +276,19 @@ def build_separate_models(groups, n_inputs, n_outputs_per_set, loss):
         return model_set1, model_set2
 
 def build_merged_model(groups, n_inputs, n_outputs_per_set, loss):
-    """
-    Build a single model with two heads for both label sets.
+    """Build a single model with two heads for both label sets.
     
-    Parameters:
-    -----------
-    groups : str
-        String indicating number of groups (e.g., "Ten", "Three", "Two")
-    n_inputs : int
-        Number of input features
-    n_outputs_per_set : int
-        Number of outputs per model head
-    loss : str
-        Loss function ("focal_loss", "binary_crossentropy")
+    Creates a merged neural network with shared feature extraction layers and
+    separate output heads for non-uniform (DIF_a) and uniform (DIF_b) DIF detection.
+    
+    Args:
+        groups (str): String indicating number of groups (e.g., "Ten", "Three", "Two").
+        n_inputs (int): Number of input features.
+        n_outputs_per_set (int): Number of outputs per model head.
+        loss (str): Loss function ("focal_loss" or "binary_crossentropy").
     
     Returns:
-    --------
-    Model
-        Single compiled Keras model with two outputs
+        Model: Single compiled Keras model with two outputs.
     """
     
     # Input layer
@@ -384,27 +378,18 @@ def build_merged_model(groups, n_inputs, n_outputs_per_set, loss):
 def load_training_data(groups, training_features=None, 
                        replications=500, 
                        merged=False):
-    """
-    Load and preprocess training data and labels.
+    """Load and preprocess training data and labels.
     
-    Parameters:
-    -----------
-    groups : str
-        String indicating number of groups (e.g., "Ten", "Three", "Two")
-    training_features : str
-        String or index indicating which features to load. 
-        default to all features
-    replications : int
-        Number of replications to load (default: 250)
-    labels_pattern : str
-        Glob pattern for training labels files
-    merged : bool
-        If True, creates a dict for y to be used in the merged models
+    Args:
+        groups (str): String indicating number of groups (e.g., "Ten", "Three", "Two").
+        training_features (str, optional): String or index indicating which features to load.
+            Defaults to all features.
+        replications (int, optional): Number of replications to load. Defaults to 500.
+        merged (bool, optional): If True, creates a dict for y to be used in merged models.
+            Defaults to False.
     
     Returns:
-    --------
-    tuple
-        (training_data, training_labels, feature_names, DIF_tests)
+        tuple: (training_data, training_labels, feature_names, DIF_tests).
     """
     
     # Create the folder path dynamically based on groups parameter
@@ -481,20 +466,14 @@ def load_training_data(groups, training_features=None,
     return training_data, training_labels, feature_names, DIF_tests
 
 def clean_data(data, labels):
-    """
-    Clean data by removing NaN and infinite values.
+    """Clean data by removing NaN and infinite values.
     
-    Parameters:
-    -----------
-    data : pd.DataFrame
-        Input data
-    labels : pd.DataFrame
-        Input labels
+    Args:
+        data (pd.DataFrame): Input data.
+        labels (pd.DataFrame): Input labels.
     
     Returns:
-    --------
-    tuple
-        (cleaned_data, cleaned_labels)
+        tuple: (cleaned_data, cleaned_labels).
     """
     # Drop anchor items (NaN values)
     nan_indices = data[data.isna().any(axis=1)].index
@@ -507,21 +486,16 @@ def clean_data(data, labels):
     return data, labels
 
 def prepare_label_sets(training_labels, merged=False):
-    """
-    Helper function to split labels into DIF_a and DIF_b sets.
+    """Helper function to split labels into DIF_a and DIF_b sets.
     
-    Parameters:
-    -----------
-    training_labels : pd.DataFrame
-        DataFrame containing all labels
-    merged : bool, optional
-        If True, returns labels in dictionary format for merged model
+    Args:
+        training_labels (pd.DataFrame): DataFrame containing all labels.
+        merged (bool, optional): If True, returns labels in dictionary format for merged model.
+            Defaults to False.
     
     Returns:
-    --------
-    tuple or dict
-        If merged=False: (y_set1, y_set2, set1_cols, set2_cols)
-        If merged=True: Returns same tuple plus a dictionary format
+        tuple: If merged=False: (y_set1, y_set2, set1_cols, set2_cols).
+            If merged=True: Returns same tuple plus a dictionary format.
     """
     all_columns = training_labels.columns.tolist()
     
@@ -556,36 +530,27 @@ def evaluate_split_ratios(
     plotting=True,
     merged=False
 ):
-    """
-    Evaluate macro-F1 performance across different train/validation splits using repeated stratified sampling.
+    """Evaluate macro-F1 performance across different train/validation splits using repeated stratified sampling.
 
-    Parameters
-    ----------
-    training_data : pd.DataFrame
-        Feature matrix.
-    training_labels : pd.DataFrame
-        Multi-label binary target matrix.
-    groups : str
-        String indicating number of groups (e.g., "Ten", "Three", "Two")
-    split_ratios : list of float, optional
-        List of validation set proportions to test. Default is [0.5, 0.4, 0.3, 0.2, 0.1].
-    split_labels : list of str, optional
-        Human-readable labels for each split ratio.
-    n_repeats : int, optional
-        Number of random splits per ratio to average over. Default is 10.
-    verbose : bool, optional
-        Whether to print progress information.
-    plotting : bool, optional
-        Whether to print plots
-    merged : bool, optional
-        If True, uses merged model architecture. If False, uses separate models.
+    Args:
+        training_data (pd.DataFrame): Feature matrix.
+        training_labels (pd.DataFrame): Multi-label binary target matrix.
+        groups (str): String indicating number of groups (e.g., "Ten", "Three", "Two").
+        loss (str): Loss function to use.
+        split_ratios (list of float, optional): List of validation set proportions to test.
+            Defaults to [0.5, 0.4, 0.3, 0.2, 0.1].
+        split_labels (list of str, optional): Human-readable labels for each split ratio.
+            Defaults to ["50/50", "60/40", "70/30", "80/20", "90/10"].
+        n_repeats (int, optional): Number of random splits per ratio to average over.
+            Defaults to 10.
+        verbose (bool, optional): Whether to print progress information. Defaults to False.
+        plotting (bool, optional): Whether to print plots. Defaults to True.
+        merged (bool, optional): If True, uses merged model architecture. If False, uses
+            separate models. Defaults to False.
 
-    Returns
-    -------
-    perf_df : pd.DataFrame
-        Summary dataframe with mean and std macro-F1 scores across splits.
-    best_split_avg : float
-        Value for splitting data
+    Returns:
+        tuple: (perf_df, best_split_avg) where perf_df is a DataFrame with mean and std
+            macro-F1 scores across splits, and best_split_avg is the optimal split ratio.
     """
     
     # Early stopping callback
@@ -717,28 +682,20 @@ def evaluate_split_ratios(
 # InterDIFNet Training
 
 def prepare_train_val_split(training_data, training_labels, test_size=0.2, random_state=12345, merged=False):
-    """
-    Prepare training and validation splits with proper scaling.
+    """Prepare training and validation splits with proper scaling.
     
-    Parameters:
-    -----------
-    training_data : pd.DataFrame
-        Training data
-    training_labels : pd.DataFrame  
-        Training labels
-    test_size : float
-        Proportion of data for validation (default: 0.2)
-    random_state : int
-        Random state for reproducibility
-    merged : bool
-        If True, returns labels in dictionary format for merged model
+    Args:
+        training_data (pd.DataFrame): Training data.
+        training_labels (pd.DataFrame): Training labels.
+        test_size (float, optional): Proportion of data for validation. Defaults to 0.2.
+        random_state (int, optional): Random state for reproducibility. Defaults to 12345.
+        merged (bool, optional): If True, returns labels in dictionary format for merged model.
+            Defaults to False.
     
     Returns:
-    --------
-    tuple
-        For merged=False: (X_train_scaled, X_val_scaled, y_train_set1, y_train_set2, 
-                          y_val_set1, y_val_set2, scaler, set1_cols, set2_cols)
-        For merged=True: Also includes y_train_dict and y_val_dict
+        tuple: For merged=False: (X_train_scaled, X_val_scaled, y_train_set1, y_train_set2,
+            y_val_set1, y_val_set2, scaler, set1_cols, set2_cols).
+            For merged=True: Also includes y_train_dict and y_val_dict.
     """
     # Shuffle training data
     training_data, training_labels = shuffle(training_data, training_labels, random_state=random_state)
@@ -776,37 +733,29 @@ def prepare_train_val_split(training_data, training_labels, test_size=0.2, rando
 def train_models(X_train_scaled, X_val_scaled, y_train_set1, y_train_set2, 
                 y_val_set1, y_val_set2, groups, epochs, batch_size, loss, 
                 merged=False, y_train_dict=None, y_val_dict=None):
-    """
-    Train either separate DIF models or a single merged model.
+    """Train either separate DIF models or a single merged model.
     
-    Parameters:
-    -----------
-    X_train_scaled : np.ndarray
-        Scaled training features
-    X_val_scaled : np.ndarray
-        Scaled validation features  
-    y_train_set1, y_train_set2 : np.ndarray
-        Training labels for each set
-    y_val_set1, y_val_set2 : np.ndarray
-        Validation labels for each set
-    groups : str
-        String indicating number of groups (e.g., "Ten", "Three", "Two")
-    epochs : int
-        Number of training epochs (default: 200)
-    batch_size : int
-        Batch size for training (default: 32)
-    loss : str
-        Loss function to use
-    merged : bool
-        If True, trains a single merged model. If False, trains separate models.
-    y_train_dict, y_val_dict : dict, optional
-        Dictionary format labels for merged model (required if merged=True)
+    Args:
+        X_train_scaled (np.ndarray): Scaled training features.
+        X_val_scaled (np.ndarray): Scaled validation features.
+        y_train_set1 (np.ndarray): Training labels for set 1.
+        y_train_set2 (np.ndarray): Training labels for set 2.
+        y_val_set1 (np.ndarray): Validation labels for set 1.
+        y_val_set2 (np.ndarray): Validation labels for set 2.
+        groups (str): String indicating number of groups (e.g., "Ten", "Three", "Two").
+        epochs (int): Number of training epochs.
+        batch_size (int): Batch size for training.
+        loss (str): Loss function to use.
+        merged (bool, optional): If True, trains a single merged model. If False, trains
+            separate models. Defaults to False.
+        y_train_dict (dict, optional): Dictionary format labels for merged model
+            (required if merged=True). Defaults to None.
+        y_val_dict (dict, optional): Dictionary format validation labels for merged model
+            (required if merged=True). Defaults to None.
     
     Returns:
-    --------
-    tuple
-        For merged=False: (model_dif_a, model_dif_b, history_a, history_b)
-        For merged=True: (merged_model, None, history, None)
+        tuple: For merged=False: (model_dif_a, model_dif_b, history_a, history_b).
+            For merged=True: (merged_model, None, history, None).
     """
     
     # Early stopping callback
@@ -883,24 +832,16 @@ def train_models(X_train_scaled, X_val_scaled, y_train_set1, y_train_set2,
 
 
 def youden_vs_threshold(y_true_set, y_pred_set, set_name, verbose=False):
-    """
-    Find optimal threshold using Youden's J statistic.
+    """Find optimal threshold using Youden's J statistic.
     
-    Parameters:
-    -----------
-    y_true_set : np.ndarray
-        True labels
-    y_pred_set : np.ndarray
-        Predicted probabilities
-    set_name : str
-        Name for plotting
-    verbose : bool
-        Controls printing
+    Args:
+        y_true_set (np.ndarray): True labels.
+        y_pred_set (np.ndarray): Predicted probabilities.
+        set_name (str): Name for plotting.
+        verbose (bool, optional): Controls printing. Defaults to False.
     
     Returns:
-    --------
-    tuple
-        (opt_threshold, opt_tpr, opt_fpr)
+        tuple: (opt_threshold, opt_tpr, opt_fpr).
     """
     fpr, tpr, thresholds = roc_curve(y_true_set.ravel(), y_pred_set.ravel())
     youden = tpr - fpr
@@ -934,28 +875,19 @@ def youden_vs_threshold(y_true_set, y_pred_set, set_name, verbose=False):
 def macro_f1_vs_threshold(y_true_set, y_pred_set, set_name, 
                           threshold_range=None, verbose=False,
                           plotting=False):
-    """
-    Find optimal threshold using macro-F1 score for multilabel classification.
+    """Find optimal threshold using macro-F1 score for multilabel classification.
     
-    Parameters:
-    -----------
-    y_true_set : np.ndarray
-        Ground truth labels (n_samples, n_labels)
-    y_pred_set : np.ndarray
-        Predicted probabilities (n_samples, n_labels)
-    set_name : str
-        Name for plotting and output
-    threshold_range : np.ndarray, optional
-        Array of thresholds to test (default: 100 values from 0.01 to 0.99)
-    verbose : bool
-        Controls printing
-    plotting : bool
-        Whether to show plots
+    Args:
+        y_true_set (np.ndarray): Ground truth labels (n_samples, n_labels).
+        y_pred_set (np.ndarray): Predicted probabilities (n_samples, n_labels).
+        set_name (str): Name for plotting and output.
+        threshold_range (np.ndarray, optional): Array of thresholds to test.
+            Defaults to 100 values from 0.01 to 0.99.
+        verbose (bool, optional): Controls printing. Defaults to False.
+        plotting (bool, optional): Whether to show plots. Defaults to False.
     
     Returns:
-    --------
-    tuple
-        (opt_threshold, opt_macro_f1, opt_macro_precision, opt_macro_recall)
+        tuple: (opt_threshold, opt_macro_f1, opt_macro_precision, opt_macro_recall).
     """
     if threshold_range is None:
         threshold_range = np.linspace(0.01, 1, 100)
@@ -1049,8 +981,18 @@ def macro_f1_vs_threshold(y_true_set, y_pred_set, set_name,
     return opt_threshold, opt_macro_f1, opt_macro_precision, opt_macro_recall
 
 def evaluate_model_f1_score(model, X_val, y_val, scenario_name, rep, label):
-    """
-    Evaluate macro F1 score and avoid storing predictions.
+    """Evaluate macro F1 score and avoid storing predictions.
+    
+    Args:
+        model (keras.Model): Trained model.
+        X_val (np.ndarray): Validation features.
+        y_val (np.ndarray): Validation labels.
+        scenario_name (str): Name of the scenario.
+        rep (int): Repetition number.
+        label (str): Label identifier.
+    
+    Returns:
+        float: Macro F1 score.
     """
     preds = model.predict(X_val, verbose=0)
     _, macro_f1, _, _ = macro_f1_vs_threshold(
@@ -1062,17 +1004,15 @@ def evaluate_model_f1_score(model, X_val, y_val, scenario_name, rep, label):
 
 
 def plot_training_history(history_a, history_b=None, merged=False):
-    """
-    Plot training and validation loss for models.
+    """Plot training and validation loss for models.
     
-    Parameters:
-    -----------
-    history_a : keras.callbacks.History
-        Training history for model A (or merged model if merged=True)
-    history_b : keras.callbacks.History, optional
-        Training history for model B (ignored if merged=True)
-    merged : bool
-        If True, plots merged model history. If False, plots separate model histories.
+    Args:
+        history_a (keras.callbacks.History): Training history for model A
+            (or merged model if merged=True).
+        history_b (keras.callbacks.History, optional): Training history for model B
+            (ignored if merged=True). Defaults to None.
+        merged (bool, optional): If True, plots merged model history. If False,
+            plots separate model histories. Defaults to False.
     """
     if merged:
         # Plot merged model history
@@ -1139,26 +1079,19 @@ def plot_training_history(history_a, history_b=None, merged=False):
 
 def find_optimal_thresholds(model_dif_a, model_dif_b, X_val_scaled,
                             y_val_set1, y_val_set2, merged=False):
-    """
-    Find optimal thresholds for models.
+    """Find optimal thresholds for models.
     
-    Parameters:
-    -----------
-    model_dif_a : keras.Model
-        First model (or merged model if merged=True)
-    model_dif_b : keras.Model, optional
-        Second model (ignored if merged=True)
-    X_val_scaled : np.ndarray
-        Validation features
-    y_val_set1, y_val_set2 : np.ndarray
-        Validation labels
-    merged : bool
-        If True, treats model_dif_a as merged model
+    Args:
+        model_dif_a (keras.Model): First model (or merged model if merged=True).
+        model_dif_b (keras.Model, optional): Second model (ignored if merged=True).
+        X_val_scaled (np.ndarray): Validation features.
+        y_val_set1 (np.ndarray): Validation labels for set 1.
+        y_val_set2 (np.ndarray): Validation labels for set 2.
+        merged (bool, optional): If True, treats model_dif_a as merged model.
+            Defaults to False.
         
     Returns:
-    --------
-    tuple
-        (opt_thr_a, opt_thr_b)
+        tuple: (opt_thr_a, opt_thr_b).
     """
     if merged:
         # Get predictions from merged model
@@ -1204,36 +1137,28 @@ def complete_training_pipeline(groups, loss, replications=500, epochs=200, batch
                               training_features=None,
                               plot_results=True, threshold_method='macro_f1',
                               val_split=False, merged=False):
-    """
-    Complete training pipeline from data loading to model training and threshold optimization.
+    """Complete training pipeline from data loading to model training and threshold optimization.
     
-    Parameters:
-    -----------
-    groups : str
-        String indicating number of groups (e.g., "Ten", "Three", "Two")
-    loss : str
-        Loss function to use
-    replications : int
-        Number of replications to load (default: 500)
-    epochs : int
-        Number of training epochs (default: 200)
-    batch_size : int
-        Batch size for training (default: 32)
-    training_features : str
-        Set to "TLP" to only use TLP input features
-    plot_results : bool
-        Whether to plot training history and threshold curves (default: True)
-    threshold_method : str
-        Method for threshold optimization: 'macro_f1' or 'youden' (default: 'macro_f1')
-    val_split : bool
-        Whether to test different validation split ratios (default: False)
-    merged : bool
-        If True, uses merged model architecture. If False, uses separate models.
+    Args:
+        groups (str): String indicating number of groups (e.g., "Ten", "Three", "Two").
+        loss (str): Loss function to use.
+        replications (int, optional): Number of replications to load. Defaults to 500.
+        epochs (int, optional): Number of training epochs. Defaults to 200.
+        batch_size (int, optional): Batch size for training. Defaults to 32.
+        training_features (str, optional): Set to "TLP" to only use TLP input features.
+            Defaults to None (use all features).
+        plot_results (bool, optional): Whether to plot training history and threshold curves.
+            Defaults to True.
+        threshold_method (str, optional): Method for threshold optimization: 'macro_f1' or
+            'youden'. Defaults to 'macro_f1'.
+        val_split (bool, optional): Whether to test different validation split ratios.
+            Defaults to False.
+        merged (bool, optional): If True, uses merged model architecture. If False, uses
+            separate models. Defaults to False.
     
     Returns:
-    --------
-    dict
-        Dictionary containing all trained components
+        dict: Dictionary containing all trained components including models, scaler,
+            thresholds, feature names, and training metadata.
     """
     print("\nLoading training data")
     training_data, training_labels, feature_names, DIF_tests = load_training_data(
@@ -1348,20 +1273,14 @@ def complete_training_pipeline(groups, loss, replications=500, epochs=200, batch
 
 # DIF Ablation Functions
 def find_columns_by_prefix(df, prefix):
-    """
-    Find all columns that start with a specific prefix.
+    """Find all columns that start with a specific prefix.
 
-    Parameters:
-    -----------
-    df : pd.DataFrame
-        DataFrame to search
-    prefix : str or list
-        Prefix(es) to search for (e.g., 'CSIB', 'SIB')
+    Args:
+        df (pd.DataFrame): DataFrame to search.
+        prefix (str or list): Prefix(es) to search for (e.g., 'CSIB', 'SIB').
 
     Returns:
-    --------
-    list
-        List of column names that match the prefix
+        list: List of column names that match the prefix.
     """
     if isinstance(prefix, str):
         prefixes = [prefix]
@@ -1371,18 +1290,13 @@ def find_columns_by_prefix(df, prefix):
 
 
 def generate_all_combinations(prefixes):
-    """
-    Generate all possible combinations of prefixes to permute.
+    """Generate all possible combinations of prefixes to permute.
 
-    Parameters:
-    -----------
-    prefixes : list
-        List of prefix strings
+    Args:
+        prefixes (list): List of prefix strings.
 
     Returns:
-    --------
-    list
-        List of tuples representing all possible combinations
+        list: List of tuples representing all possible combinations.
     """
     all_combinations = []
     for r in range(1, len(prefixes) + 1):
@@ -1392,18 +1306,13 @@ def generate_all_combinations(prefixes):
 
 
 def create_scenario_name(permuted_prefixes):
-    """
-    Create a readable name for each ablation scenario.
+    """Create a readable name for each ablation scenario.
 
-    Parameters:
-    -----------
-    permuted_prefixes : tuple
-        Tuple of prefixes that are permuted in this scenario
+    Args:
+        permuted_prefixes (tuple): Tuple of prefixes that are permuted in this scenario.
 
     Returns:
-    --------
-    str
-        String name for the scenario
+        str: String name for the scenario.
     """
     if len(permuted_prefixes) == 0:
         return "baseline"
@@ -1414,27 +1323,19 @@ def create_scenario_name(permuted_prefixes):
 
 
 def build_evaluation_models(n_inputs, n_outputs_per_set, groups, loss, merged=False):
-    """
-    Build lightweight models for ablation evaluation.
+    """Build lightweight models for ablation evaluation.
     
-    Parameters:
-    -----------
-    n_inputs : int
-        Number of input features
-    n_outputs_per_set : int
-        Number of outputs per model
-    groups : str
-        String indicating number of groups (e.g., "Ten", "Three", "Two")
-    loss : str
-        Loss function to use
-    merged : bool
-        If True, builds merged model. If False, builds separate models.
+    Args:
+        n_inputs (int): Number of input features.
+        n_outputs_per_set (int): Number of outputs per model.
+        groups (str): String indicating number of groups (e.g., "Ten", "Three", "Two").
+        loss (str): Loss function to use.
+        merged (bool, optional): If True, builds merged model. If False, builds
+            separate models. Defaults to False.
         
     Returns:
-    --------
-    Model or tuple
-        For merged=True: Single merged model
-        For merged=False: (model_set1, model_set2)
+        Model or tuple: For merged=True: Single merged model.
+            For merged=False: (model_set1, model_set2).
     """
     if merged:
         return build_merged_model(groups=groups,
@@ -1449,13 +1350,10 @@ def build_evaluation_models(n_inputs, n_outputs_per_set, groups, loss, merged=Fa
 
 
 def get_early_stopping_callback():
-    """
-    Get early stopping callback for ablation training.
+    """Get early stopping callback for ablation training.
     
     Returns:
-    --------
-    EarlyStopping
-        Configured early stopping callback
+        EarlyStopping: Configured early stopping callback.
     """
     return EarlyStopping(
         monitor='val_loss',
@@ -1471,19 +1369,15 @@ def get_early_stopping_callback():
 def plot_top_ablation_results(results_df, top_k=10, 
                               score_col="Mean_F1_Overall",
                               reference="baseline"):
-    """
-    Plot top-k scenarios with largest F1 performance drop from baseline.
+    """Plot top-k scenarios with largest F1 performance drop from baseline.
 
-    Parameters:
-    -----------
-    results_df : pd.DataFrame
-        Results from run_ablation_study()
-    top_k : int
-        Number of top scenarios to plot
-    score_col : str
-        Which score to rank by ("Mean_F1_Overall", "F1_DIF_a_Mean" or "F1_DIF_b_Mean")
-    reference : str
-        Which DIF Test serves as reference group
+    Args:
+        results_df (pd.DataFrame): Results from run_ablation_study().
+        top_k (int, optional): Number of top scenarios to plot. Defaults to 10.
+        score_col (str, optional): Which score to rank by ("Mean_F1_Overall",
+            "F1_DIF_a_Mean" or "F1_DIF_b_Mean"). Defaults to "Mean_F1_Overall".
+        reference (str, optional): Which DIF Test serves as reference group.
+            Defaults to "baseline".
     """
     # Identify reference score
     if reference == "baseline":
@@ -1527,15 +1421,11 @@ def plot_top_ablation_results(results_df, top_k=10,
 
 
 def print_best_scenario(results_df, merged=False):
-    """
-    Print the best performing scenario (highest average F1 across DIF_a and DIF_b).
+    """Print the best performing scenario (highest average F1 across DIF_a and DIF_b).
     
-    Parameters:
-    -----------
-    results_df : pd.DataFrame
-        Results from ablation study
-    merged : bool
-        Whether results are from merged model
+    Args:
+        results_df (pd.DataFrame): Results from ablation study.
+        merged (bool, optional): Whether results are from merged model. Defaults to False.
     """
     
     best_row = results_df.loc[results_df["Mean_F1_Overall"].idxmax()]
@@ -1550,26 +1440,18 @@ def print_best_scenario(results_df, merged=False):
 
 
 def evaluate_merged_model_f1_score(model, X_val, y_val_a, y_val_b, scenario_name, rep):
-    """
-    Evaluate macro F1 score for merged model and avoid storing predictions.
+    """Evaluate macro F1 score for merged model and avoid storing predictions.
     
-    Parameters:
-    -----------
-    model : keras.Model
-        Merged model with two outputs
-    X_val : np.ndarray
-        Validation features
-    y_val_a, y_val_b : np.ndarray
-        Validation labels for DIF_a and DIF_b
-    scenario_name : str
-        Name of current scenario
-    rep : int
-        Repetition number
+    Args:
+        model (keras.Model): Merged model with two outputs.
+        X_val (np.ndarray): Validation features.
+        y_val_a (np.ndarray): Validation labels for DIF_a.
+        y_val_b (np.ndarray): Validation labels for DIF_b.
+        scenario_name (str): Name of current scenario.
+        rep (int): Repetition number.
         
     Returns:
-    --------
-    tuple
-        (macro_f1_a, macro_f1_b)
+        tuple: (macro_f1_a, macro_f1_b).
     """
     predictions = model.predict(X_val, verbose=0)
     pred_a = predictions[0]  # output_set1
@@ -1596,46 +1478,33 @@ def run_ablation_study(training_data, training_labels, DIF_tests, groups,
                        skip_all_permuted=True,
                        verbose=False,
                        merged=False):
-    """
-    Run ablation study by permuting feature groups defined by prefixes.
+    """Run ablation study by permuting feature groups defined by prefixes.
     
-    Parameters:
-    -----------
-    training_data : pd.DataFrame
-        Original training features (before permutation)
-    training_labels : pd.DataFrame
-        Label DataFrame for both DIF_a and DIF_b
-    DIF_tests : list
-        List of all available feature group prefixes
-    groups : str
-        String indicating number of groups (e.g., "Ten", "Three", "Two")
-    set1_cols, set2_cols : list
-        Names of DIF_a and DIF_b columns
-    n_outputs_per_set : int
-        Number of outputs per model
-    loss : str
-        Loss function to use
-    val_size : float
-        Validation size for both models
-    scenario_prefix_combinations : list of tuples, optional
-        List of prefix combinations to permute (if None, generate all)
-    n_repeats : int
-        Number of repetitions for each scenario to average performance
-    random_state : int
-        Seed for reproducibility
-    reference : str
-        Scenario used for reference group. Default is baseline, no permutation
-    skip_all_permuted : bool
-        If True, skip the scenario where all feature groups are permuted
-    verbose : bool
-        Whether to print detailed progress
-    merged : bool
-        If True, uses merged model architecture. If False, uses separate models.
+    Args:
+        training_data (pd.DataFrame): Original training features (before permutation).
+        training_labels (pd.DataFrame): Label DataFrame for both DIF_a and DIF_b.
+        DIF_tests (list): List of all available feature group prefixes.
+        groups (str): String indicating number of groups (e.g., "Ten", "Three", "Two").
+        set1_cols (list): Names of DIF_a columns.
+        set2_cols (list): Names of DIF_b columns.
+        n_outputs_per_set (int): Number of outputs per model.
+        loss (str): Loss function to use.
+        val_size (float, optional): Validation size for both models. Defaults to 0.2.
+        scenario_prefix_combinations (list of tuple, optional): List of prefix combinations
+            to permute. If None, generates all. Defaults to None.
+        n_repeats (int, optional): Number of repetitions for each scenario to average
+            performance. Defaults to 5.
+        random_state (int, optional): Seed for reproducibility. Defaults to 12345.
+        reference (str, optional): Scenario used for reference group. Defaults to "baseline".
+        skip_all_permuted (bool, optional): If True, skip the scenario where all feature
+            groups are permuted. Defaults to True.
+        verbose (bool, optional): Whether to print detailed progress. Defaults to False.
+        merged (bool, optional): If True, uses merged model architecture. If False, uses
+            separate models. Defaults to False.
         
     Returns:
-    --------
-    tuple
-        (results_df, selected_features, optimal_training_data) - Results and optimal feature sets
+        tuple: (results_df, selected_features, optimal_training_data) - Results and
+            optimal feature sets.
     """
     np.random.seed(random_state)
     model_type = "Merged" if merged else "Separate"

@@ -8,32 +8,86 @@ Created on Mon Dec 23 18:29:29 2024
 @author: yalequan
 """
 
-import numpy as np
-import pandas as pd
-import glob
-from tensorflow.keras import Input
-from tensorflow.keras.models import Sequential, Model, load_model
-from tensorflow.keras.layers import Dense, Dropout, BatchNormalization
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.regularizers import l2
-import matplotlib.pyplot as plt
-from skmultilearn.model_selection import iterative_train_test_split
-import os
-from sklearn.preprocessing import StandardScaler
-from tensorflow.keras.metrics import AUC
-from sklearn.metrics import roc_curve
-from sklearn.utils import shuffle
-from itertools import combinations
-import seaborn as sns
-import tensorflow.keras.backend as K
-import gc
-import tensorflow as tf
-import re
-import networkx as nx
-from pathlib import Path
-import pickle
-from datetime import datetime
+# Auto-install and import required packages
+import sys
+import subprocess
+import importlib.util
+
+
+def _check_and_install_package(package_name, import_name=None):
+    """
+    Check if a package is installed, and install it if not.
+    
+    Parameters:
+    -----------
+    package_name : str
+        The name of the package to install (used with pip)
+    import_name : str, optional
+        The name to use when importing (if different from package_name)
+    """
+    if import_name is None:
+        import_name = package_name
+    
+    # Check if package is already installed
+    if importlib.util.find_spec(import_name) is None:
+        print(f"\n{'='*60}")
+        print(f"Package '{package_name}' not found.")
+        print(f"Installing '{package_name}'...")
+        print(f"{'='*60}\n")
+        try:
+            subprocess.check_call(
+                [sys.executable, "-m", "pip", "install", package_name],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE
+            )
+            print(f"  Successfully installed '{package_name}'\n")
+        except subprocess.CalledProcessError as e:
+            print(f"  Error installing '{package_name}': {e}")
+            print(f"Please install manually: pip install {package_name}")
+            raise
+
+
+# Define required packages with their install and import names
+_REQUIRED_PACKAGES = [
+    ("numpy", "numpy"),
+    ("pandas", "pandas"),
+    ("tensorflow", "tensorflow"),
+    ("scikit-learn", "sklearn"),
+    ("matplotlib", "matplotlib"),
+    ("seaborn", "seaborn"),
+    ("scikit-multilearn", "skmultilearn"),
+    ("networkx", "networkx"),
+]
+
+# Check and install all required packages
+print("Checking InterDIFNet dependencies...")
+for package_name, import_name in _REQUIRED_PACKAGES:
+    _check_and_install_package(package_name, import_name)
+print("All dependencies are ready.\n")
+
+# Now import all required packages (suppressing linter warnings about import order)
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import glob  # noqa: E402
+from tensorflow.keras import Input  # noqa: E402
+from tensorflow.keras.models import Sequential, Model  # noqa: E402
+from tensorflow.keras.layers import Dense, Dropout, BatchNormalization  # noqa: E402
+from tensorflow.keras.optimizers import Adam  # noqa: E402
+from tensorflow.keras.callbacks import EarlyStopping  # noqa: E402
+from tensorflow.keras.regularizers import l2  # noqa: E402
+import matplotlib.pyplot as plt  # noqa: E402
+from skmultilearn.model_selection import iterative_train_test_split  # noqa: E402
+import os  # noqa: E402
+from sklearn.preprocessing import StandardScaler  # noqa: E402
+from tensorflow.keras.metrics import AUC  # noqa: E402
+from sklearn.metrics import roc_curve  # noqa: E402
+from sklearn.utils import shuffle  # noqa: E402
+from itertools import combinations  # noqa: E402
+import seaborn as sns  # noqa: E402
+import tensorflow.keras.backend as K  # noqa: E402
+import gc  # noqa: E402
+import tensorflow as tf  # noqa: E402
+from pathlib import Path  # noqa: E402
 
 # Loss Function
 

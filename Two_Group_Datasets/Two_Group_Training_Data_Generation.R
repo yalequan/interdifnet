@@ -7,15 +7,7 @@
 #' models in the simplest classical two-group setting.
 #'
 #' @section Purpose:
-#' Generates training data for the two-group scenario (classical baseline
-#' condition). While the main study uses 10 groups with 45 pairwise comparisons,
-#' and validation uses 3 groups with 3 pairwise comparisons, this two-group
-#' scenario with only 1 pairwise comparison provides:
-#' - Training data for baseline two-group DIF detection
-#' - Simplest possible multi-group scenario (S=2)
-#' - Classical reference vs focal group comparison
-#' - Benchmark for comparing with complex multi-group scenarios
-#' - Traditional DIF setting used in most literature
+#' Generates training data for the two-group scenario.
 #'
 #' @section Simulation Parameters:
 #' - **Number of Replications**: 600 training datasets
@@ -27,16 +19,6 @@
 #'   * Ensures integer group sizes with ratio 60%/40%
 #' - **DIF Items (m)**: Randomly 2, 3, or 4 items per dataset
 #' - **DIF Types**: "a" (discrimination), "b" (difficulty), "ab" (both)
-#'
-#' @section IRT Model:
-#' Uses the 2-Parameter Logistic (2PL) model:
-#' \deqn{P(Y_{ij} = 1 | \theta_i, a_j, b_j) = \frac{1}{1 + \exp(-a_j(\theta_i - b_j))}}
-#' where:
-#' - \eqn{\theta_i}: Latent ability for person i ~ N(μ_s, σ_s)
-#' - \eqn{a_j}: Discrimination parameter ~ Uniform(1.5, 2.5)
-#' - \eqn{b_j}: Difficulty parameter ~ N(0, 1)
-#' - Group means: μ = (0, 1) for reference and focal groups
-#' - Group standard deviations: σ = (1, 1)
 #'
 #' @section DIF Implementation:
 #' DIF is introduced through parameter shifts:
@@ -94,26 +76,7 @@
 #'
 #' @author Yale Quan
 #' @date February 2026
-#'
-#' @references
-#' Lord, F. M. (1980). Applications of item response theory to practical
-#' testing problems. Lawrence Erlbaum Associates.
-#'
-#' Thissen, D., Steinberg, L., & Wainer, H. (1993). Detection of differential
-#' item functioning using the parameters of item response models. In
-#' P. W. Holland & H. Wainer (Eds.), Differential item functioning (pp. 67-113).
-#' Lawrence Erlbaum Associates.
-#'
-#' @note
-#' - This script generates TWO-GROUP TRAINING data (simplest scenario)
-#' - For main analysis with 10 groups, see Ten_Group_Training_Data_Generation.R
-#' - For validation with 3 groups, see Three_Group_Training_Data_Generation.R
-#' - Output files used by Two_Group_Training_Data_Parameters.R for estimation
-#' - Generates 600 replications for robust training
-#' - Each dataset has random N, m, and DIF configuration
-#' - Two groups create simplest scenario with only 1 pairwise comparison
-#' - Classical two-group setting for baseline model training
-#'
+#' 
 #' @examples
 #' # This script is designed to be run as a standalone batch process:
 #' # source("Two_Group_Training_Data_Generation.R")

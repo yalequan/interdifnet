@@ -18,7 +18,7 @@
 #' - Total Training Files: 100 replications (vs 51 in 10-group scenario)
 #'
 #' @section Parameter Estimation Method:
-#' Uses VEMIRT to perform the Truncated Lasso Penalty (TLP) estimation of 2PL parameters:
+#' Uses VEMIRT package to utilize the truncated lasso penalty (TLP) for parameter estimation
 #' - Penalty Parameters: Lambda (L1) and Tau (L2/Ridge)
 #' - Lambda Grid: seq(0.1, 1.5, by=0.1) for sparsity control
 #' - Tau Grid: c(Inf, seq(0.05, 0.5, by=0.05)) for shrinkage
@@ -44,7 +44,7 @@
 #'
 #' @section Output Features:
 #' For each training file, the script generates:
-#' - VEMIRT Parameters: a and b estimates for 3 groups (6 features per item)
+#' - TLP Parameters: a and b estimates for 3 groups (6 features per item)
 #' - Pairwise Differences: d.a and d.b for 3 comparisons (6 features per item)
 #' - MH Statistics: 3 pairwise comparisons (3 features per item)
 #' - LR Statistics: 9 tests (3 types × 3 comparisons) (9 features per item)
@@ -58,7 +58,7 @@
 #' 2. Check if file already estimated (skip if exists)
 #' 3. Load simulated training data from RData file
 #' 4. Generate all pairwise group combinations (3 pairs)
-#' 5. Estimate VEMIRT parameters with BIC selection
+#' 5. Estimate TLP parameters
 #' 6. Calculate pairwise parameter differences
 #' 7. Run five DIF tests on each pairwise comparison
 #' 8. Combine all results into comprehensive feature set

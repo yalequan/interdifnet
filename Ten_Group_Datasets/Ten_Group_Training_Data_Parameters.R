@@ -8,12 +8,12 @@
 #' @section Overview:
 #' The script performs the following operations for each training dataset:
 #' 1. Loads simulated response data from RData files
-#' 2. Estimates 2PL IRT parameters using VEMIRT (penalized estimation)
+#' 2. Uses VEMIRT package to utilize the truncated lasso penalty (TLP) for parameter estimation
 #' 3. Computes pairwise DIF statistics across all group combinations
 #' 4. Saves estimated parameters and test statistics for model training
 #'
 #' @section IRT Parameter Estimation:
-#' - Method: VEMIRT (Variational EM for IRT with regularization)
+#' - Uses VEMIRT package to utilize the truncated lasso penalty (TLP) for parameter estimation
 #' - Model: 2-Parameter Logistic (2PL)
 #' - Tuning: BIC-based selection of penalty parameters (Lambda, Tau)
 #' - Output: Discrimination (a) and difficulty (b) parameters per group

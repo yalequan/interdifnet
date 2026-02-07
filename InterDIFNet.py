@@ -8,42 +8,51 @@ Created on Mon Dec 23 18:29:29 2024
 @author: yalequan
 """
 
-# Auto-install and import required packages
+# Auto-check and optionally install required packages
 import sys
 import subprocess
 import importlib.util
 
 
-def _check_and_install_package(package_name, import_name=None):
+def _check_package_installed(import_name):
     """
-    Check if a package is installed, and install it if not.
+    Check if a package is installed.
     
     Parameters:
     -----------
-    package_name : str
-        The name of the package to install (used with pip)
-    import_name : str, optional
-        The name to use when importing (if different from package_name)
+    import_name : str
+        The name to use when importing
+        
+    Returns:
+    --------
+    bool
+        True if installed, False otherwise
     """
-    if import_name is None:
-        import_name = package_name
+    return importlib.util.find_spec(import_name) is not None
+
+
+def _install_packages(packages_to_install):
+    """
+    Install a list of packages.
     
-    # Check if package is already installed
-    if importlib.util.find_spec(import_name) is None:
-        print(f"\n{'='*60}")
-        print(f"Package '{package_name}' not found.")
-        print(f"Installing '{package_name}'...")
-        print(f"{'='*60}\n")
+    Parameters:
+    -----------
+    packages_to_install : list of tuples
+        List of (package_name, import_name) tuples to install
+    """
+    print("\nInstalling packages...")
+    for package_name, import_name in packages_to_install:
+        print(f"  Installing '{package_name}'...")
         try:
             subprocess.check_call(
                 [sys.executable, "-m", "pip", "install", package_name],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE
             )
-            print(f"  Successfully installed '{package_name}'\n")
+            print(f"  Successfully installed '{package_name}'")
         except subprocess.CalledProcessError as e:
             print(f"  Error installing '{package_name}': {e}")
-            print(f"Please install manually: pip install {package_name}")
+            print(f"  Please install manually: pip install {package_name}")
             raise
 
 
@@ -59,11 +68,41 @@ _REQUIRED_PACKAGES = [
     ("networkx", "networkx"),
 ]
 
-# Check and install all required packages
-print("Checking InterDIFNet dependencies...")
+# Check for missing packages
+missing_packages = []
 for package_name, import_name in _REQUIRED_PACKAGES:
-    _check_and_install_package(package_name, import_name)
-print("All dependencies are ready.\n")
+    if not _check_package_installed(import_name):
+        missing_packages.append((package_name, import_name))
+
+# If packages are missing, prompt user
+if missing_packages:
+    print("\n" + "="*70)
+    print("InterDIFNet Dependencies Check")
+    print("="*70)
+    print("\nThe following packages are required but not installed:")
+    for package_name, _ in missing_packages:
+        print(f"  - {package_name}")
+    
+    print(f"\nYou can install them by running:")
+    print(f"  pip install {' '.join([pkg for pkg, _ in missing_packages])}")
+    
+    print("\nWould you like to install them automatically now? (y/n): ", end="", flush=True)
+    
+    try:
+        response = input().strip().lower()
+        if response in ['y', 'yes']:
+            _install_packages(missing_packages)
+            print("\nAll dependencies installed successfully!\n")
+        else:
+            print("\nPlease install the required packages before using InterDIFNet.")
+            print(f"Run: pip install {' '.join([pkg for pkg, _ in missing_packages])}")
+            sys.exit(1)
+    except (EOFError, KeyboardInterrupt):
+        print("\n\nInstallation cancelled. Please install required packages manually.")
+        print(f"Run: pip install {' '.join([pkg for pkg, _ in missing_packages])}")
+        sys.exit(1)
+else:
+    print("All InterDIFNet dependencies are installed.")
 
 # Now import all required packages (suppressing linter warnings about import order)
 import numpy as np  # noqa: E402

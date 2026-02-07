@@ -193,7 +193,7 @@ for (r in 1:500) {
   cat("\nMantel-Haenszel pairwise test")
   MH_Results.L <- tibble()
   for (k in 1:possible_pairs) {
-    pairwise_df <- as.data.frame(cbind(g, y)) |>
+    pairwise_df <- as.data.frame(cbind(g, y)) %>%
       dplyr::filter(g %in% pair_matrix[k, ])
     pairwise_items <- dplyr::select(pairwise_df, -g)
     pairwise_groups <- as.character(pairwise_df$g)
@@ -219,15 +219,15 @@ for (r in 1:500) {
     MH_Results.L <- rbind(MH_Results.L,
                           cbind(item_num, MH_stat, MH_df, temp))
   }
-  Results.MH <- MH_Results.L |>
-    pivot_wider(names_from = temp, values_from = MH_stat) |>
+  Results.MH <- MH_Results.L %>%
+    pivot_wider(names_from = temp, values_from = MH_stat) %>%
     select(-item_num)
   
   # Logistic Regression ----
   cat("\nLogistic Regression")
   LR_Results_Full.L <- tibble()
   for (k in 1:possible_pairs) {
-    pairwise_df <- cbind(g, y) |>
+    pairwise_df <- cbind(g, y) %>%
       dplyr::filter(g %in% pair_matrix[k, ])
     pairwise_items <- dplyr::select(pairwise_df, -g)
     pairwise_groups <- as.character(pairwise_df$g)
@@ -309,15 +309,15 @@ for (r in 1:500) {
                                LR_Results_nonuniform.L,
                                LR_Results_both.L)
   }
-  Results.LR <- LR_Results_Full.L |>
-    pivot_wider(names_from = temp, values_from = c(LR_stat, LR_df)) |>
+  Results.LR <- LR_Results_Full.L %>%
+    pivot_wider(names_from = temp, values_from = c(LR_stat, LR_df)) %>%
     select(-item_num)
   
   # SIB Test (Simultaneous Item Bias for Uniform DIF) ----
   cat("\nSIB Test")
   SIB_Results.L <- tibble()
   for (k in 1:possible_pairs) {
-    pairwise_df <- cbind(g, y) |>
+    pairwise_df <- cbind(g, y) %>%
       dplyr::filter(g %in% pair_matrix[k, ])
     pairwise_items <- dplyr::select(pairwise_df, -g)
     pairwise_groups <- as.character(pairwise_df$g)
@@ -342,15 +342,15 @@ for (r in 1:500) {
     SIB_Results.L <- rbind(SIB_Results.L,
                            cbind(item_num, SIB_stat, SIB_DF, temp))
   }
-  Results.SIB <- SIB_Results.L |>
-    pivot_wider(names_from = temp, values_from = SIB_stat) |>
+  Results.SIB <- SIB_Results.L %>%
+    pivot_wider(names_from = temp, values_from = SIB_stat) %>%
     select(-item_num)
   
   # CSIB Test (Crossing SIB for Non-Uniform DIF) ----
   cat("\nCSIB Test")
   CSIB_Results.L <- tibble()
   for (k in 1:possible_pairs) {
-    pairwise_df <- cbind(g, y) |>
+    pairwise_df <- cbind(g, y) %>%
       dplyr::filter(g %in% pair_matrix[k, ])
     pairwise_items <- dplyr::select(pairwise_df, -g)
     pairwise_groups <- as.character(pairwise_df$g)
@@ -375,15 +375,15 @@ for (r in 1:500) {
     CSIB_Results.L <- rbind(CSIB_Results.L,
                             cbind(item_num, CSIB_stat, CSIB_DF, temp))
   }
-  Results.CSIB <- CSIB_Results.L |>
-    pivot_wider(names_from = temp, values_from = c(CSIB_stat, CSIB_DF)) |>
+  Results.CSIB <- CSIB_Results.L %>%
+    pivot_wider(names_from = temp, values_from = c(CSIB_stat, CSIB_DF)) %>%
     select(-item_num)
   
   # Standardized D-statistic ----
   cat("\nStandardized D-stat")
   D_stat.L <- tibble()
   for (k in 1:possible_pairs) {
-    pairwise_df <- as.data.frame(cbind(g, y)) |>
+    pairwise_df <- as.data.frame(cbind(g, y)) %>%
       dplyr::filter(g %in% pair_matrix[k, ])
     pairwise_items <- dplyr::select(pairwise_df, -g)
     pairwise_groups <- as.character(pairwise_df$g)
@@ -407,8 +407,8 @@ for (r in 1:500) {
                      cbind(item_num, D_stat, temp))
   }
   
-  Results.D <- D_stat.L |>
-    pivot_wider(names_from = temp, values_from = D_stat) |>
+  Results.D <- D_stat.L %>%
+    pivot_wider(names_from = temp, values_from = D_stat) %>%
     select(-item_num)
   
   # Save workspace ----

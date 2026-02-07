@@ -83,7 +83,7 @@ if missing_packages:
     for package_name, _ in missing_packages:
         print(f"  - {package_name}")
     
-    print(f"\nYou can install them by running:")
+    print(f"You can install them by running:")
     print(f"  pip install {' '.join([pkg for pkg, _ in missing_packages])}")
     
     print("\nWould you like to install them automatically now? (y/n): ", end="", flush=True)

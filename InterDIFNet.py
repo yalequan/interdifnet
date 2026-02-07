@@ -1,8 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-DIF Model Utilities
-Functions for training, evaluating, and applying DIF detection models.
+InterDIFNet: Deep Learning Framework for Differential Item Functioning Detection
+
+This module provides a comprehensive toolkit for training and applying deep neural 
+networks to detect Differential Item Functioning (DIF) in psychometric assessments. 
+It supports both uniform and non-uniform DIF detection across multiple group comparisons.
+
+Key Features:
+    - Automatic dependency management with user consent
+    - Flexible model architectures (separate or merged multi-output models)
+    - Multiple DIF test integration (Mantel-Haenszel, Logistic Regression, etc.)
+    - Ablation studies for feature importance analysis
+    - Comprehensive training pipeline with validation split optimization
+    - Support for focal loss and binary cross-entropy loss functions
+
+Main Functions:
+    - Simulation_Study: Run complete simulation studies with training and evaluation
+    - train_InterDIFNet: Train models on custom datasets
+    - DIF_Detection: Apply trained models to detect DIF in new data
 
 Created on Mon Dec 23 18:29:29 2024
 @author: yalequan

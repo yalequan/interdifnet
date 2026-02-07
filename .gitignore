@@ -10,6 +10,7 @@
 !*.R
 !*.py
 !*.txt
+!*.md
 
 # ============================================
 # EXCEPT: Track files in all subdirectories

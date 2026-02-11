@@ -26,6 +26,7 @@ training_results, testing_results = Simulation_Study(
     merged=True,
     load_existing=True,
     model_name= "InterDIFNet_Ten_Group",
+    save_results=True, 
     model_dir="./models/"
     )
 

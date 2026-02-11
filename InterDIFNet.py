@@ -1713,7 +1713,7 @@ def evaluate_models_on_test_sets(groups, model_dif_a, model_dif_b, scaler,
                                 set1_cols, set2_cols, opt_thr_a, opt_thr_b, 
                                 sizes, selected_features = None, percentages=[20, 40], 
                                 replications=range(1, 101), verbose = False,
-                                save_results = False, merged=False):
+                                save_results = False, merged=False, model_dir="./models/"):
     """
     Evaluate trained models on test sets with different configurations.
 
@@ -1741,6 +1741,8 @@ def evaluate_models_on_test_sets(groups, model_dif_a, model_dif_b, scaler,
         Controls printing
     merged : bool
         Whether model_dif_a is a merged model
+    model_dir : str
+        Directory where model is saved (used for predictions subdirectory)
 
     Returns:
     --------
@@ -1755,6 +1757,11 @@ def evaluate_models_on_test_sets(groups, model_dif_a, model_dif_b, scaler,
             }])
         thresholds_filename = f"Optimal_Thresholds_{groups}.csv"
         threshold_df.to_csv(thresholds_filename, index=False)
+        
+    # Create predictions subdirectory (needed if save_results=True)
+    predictions_dir = Path(model_dir) / "predictions"
+    if save_results:
+        predictions_dir.mkdir(parents=True, exist_ok=True)
                 
     DIF_summary_results = []
     
@@ -1839,6 +1846,70 @@ def evaluate_models_on_test_sets(groups, model_dif_a, model_dif_b, scaler,
                 if save_results:
                     output_filename = f"Classification_Results_{groups}_{n}_{p}_Replication{r}.csv"
                     prob_preds_full.to_csv(output_filename, index=False)
+                    
+                    # Build prediction dataframes for saving
+                    # Extract item numbers (rows) and predictions/labels
+                    num_items = temp_results_dif_a.shape[0]
+                    
+                    # Create long format dataframe
+                    long_data = []
+                    
+                    # Process DIF_a columns
+                    for col_idx, col_name in enumerate(set1_cols):
+                        # Extract comparison from column name (e.g., "DIF_a_Group1Group2" -> "Group1Group2")
+                        comparison = col_name.split('DIF_a_')[1] if 'DIF_a_' in col_name else col_name
+                        
+                        for item_idx in range(num_items):
+                            long_data.append({
+                                'Item': item_idx + 1,
+                                'Comparison': comparison,
+                                'DIF_Type': 'DIF_a',
+                                'Predicted_Value': temp_results_dif_a.iloc[item_idx, col_idx],
+                                'True_Label': testing_labels[col_name].iloc[item_idx]
+                            })
+                    
+                    # Process DIF_b columns
+                    for col_idx, col_name in enumerate(set2_cols):
+                        # Extract comparison from column name (e.g., "DIF_b_Group1Group2" -> "Group1Group2")
+                        comparison = col_name.split('DIF_b_')[1] if 'DIF_b_' in col_name else col_name
+                        
+                        for item_idx in range(num_items):
+                            long_data.append({
+                                'Item': item_idx + 1,
+                                'Comparison': comparison,
+                                'DIF_Type': 'DIF_b',
+                                'Predicted_Value': temp_results_dif_b.iloc[item_idx, col_idx],
+                                'True_Label': testing_labels[col_name].iloc[item_idx]
+                            })
+                    
+                    predictions_long = pd.DataFrame(long_data)
+                    
+                    # Create wide format dataframe
+                    wide_data = []
+                    
+                    # Get unique comparisons
+                    comparisons_a = [col.split('DIF_a_')[1] if 'DIF_a_' in col else col for col in set1_cols]
+                    
+                    for item_idx in range(num_items):
+                        for comp_idx, comparison in enumerate(comparisons_a):
+                            wide_row = {
+                                'Item': item_idx + 1,
+                                'Comparison': comparison,
+                                'Predicted_DIF_a': temp_results_dif_a.iloc[item_idx, comp_idx],
+                                'True_Label_DIF_a': testing_labels[set1_cols[comp_idx]].iloc[item_idx],
+                                'Predicted_DIF_b': temp_results_dif_b.iloc[item_idx, comp_idx],
+                                'True_Label_DIF_b': testing_labels[set2_cols[comp_idx]].iloc[item_idx]
+                            }
+                            wide_data.append(wide_row)
+                    
+                    predictions_wide = pd.DataFrame(wide_data)
+                    
+                    # Save predictions to CSV files
+                    long_filename = predictions_dir / f"Predictions_Long_N{n}_DIF{p}_Replication{r}.csv"
+                    wide_filename = predictions_dir / f"Predictions_Wide_N{n}_DIF{p}_Replication{r}.csv"
+                    
+                    predictions_long.to_csv(long_filename, index=False)
+                    predictions_wide.to_csv(wide_filename, index=False)
   
                 group_pairs = list(combinations(range(1, num_groups + 1), 2))
 
@@ -2370,7 +2441,8 @@ def Simulation_Study(groups, sizes,
                                                        opt_thr_b=training_results['opt_thr_b'],
                                                        sizes=sizes,
                                                        save_results=save_results,
-                                                       merged=merged)
+                                                       merged=merged,
+                                                       model_dir=model_dir)
         
         return training_results, testing_results
     
@@ -2410,7 +2482,8 @@ def Simulation_Study(groups, sizes,
                                                        opt_thr_b=training_results['opt_thr_b'],
                                                        sizes=sizes,
                                                        save_results=save_results,
-                                                       merged=merged)
+                                                       merged=merged,
+                                                       model_dir=model_dir)
 
         return ablation_results_df, selected_features, training_results, testing_results
 
@@ -2435,6 +2508,7 @@ def Simulation_Study(groups, sizes,
                                                        opt_thr_b=training_results['opt_thr_b'],
                                                        sizes=sizes,
                                                        save_results=save_results,
-                                                       merged=merged)
+                                                       merged=merged,
+                                                       model_dir=model_dir)
 
         return training_results, testing_results

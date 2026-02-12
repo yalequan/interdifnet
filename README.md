@@ -13,15 +13,19 @@ InterDIFNet/
 ├── Four_Group_Datasets                           # Folder for storing training and testing data
 ├───── Four_Group_Data_Files_For_Python.R         # R script for generating CSV files for python
 ├───── Four_Group_Training_Data_Generation.R      # R script to generate training data
-├───── Four_Group_Training_Data_Parameters.R      # R script to generate testing data
+├───── Four_Group_Training_Data_Parameters.R      # R script to estmate the training data parameters
 ├── Thre_Group_Datasets                           # Folder for storing training and testing data
 ├───── Three_Group_Data_Files_For_Python.R        # R script for generating CSV files for python
 ├───── Three_Group_Training_Data_Generation.R     # R script to generate training data
-├───── Three_Group_Training_Data_Parameters.R     # R script to generate testing data
+├───── Three_Group_Training_Data_Parameters.R     # R script to estmate the training data parameters
+├───── Three_Group_Testing_Data_Generation.R      # R script to generate testing data
+├───── Three_Group_Testing_Data_Parameters.R      # R script to estmate the testing data parameters
 ├── Ten_Group_Datasets                            # Folder for storing training and testing data
 ├───── Ten_Group_Data_Files_For_Python.R          # R script for generating CSV files for python
 ├───── Ten_Group_Training_Data_Generation.R       # R script to generate training data
-├───── Ten_Group_Training_Data_Parameters.R       # R script to generate testing data
+├───── Ten_Group_Training_Data_Parameters.R       # R script to estmate the training data parameters
+├───── Ten_Group_Testing_Data_Generation.R        # R script to generate testing data
+├───── Ten_Group_Testing_Data_Parameters.R        # R script to estmate the testing data parameters
 ├── InterDIFNet Package Dependencies.md           # Markdown file explaining how package dependencies are handled
 ├── InterDIFNet.py                                # Python code for main InterDIFNet functions
 ├── InterDIFNet_Function_Calls.py                 # Python code with InterDIFNet function calls

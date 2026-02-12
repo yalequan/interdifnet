@@ -111,21 +111,3 @@ If automatic installation fails:
 2. Ensure pip is up to date: `pip install --upgrade pip`
 3. Manually install the failing package: `pip install <package-name>`
 4. Check for permission issues (may need `sudo` on some systems or use `--user` flag)
-
-## User Control
-
-**You are always in control:**
-- The module **never installs without asking**
-- You can choose to install automatically or manually
-- Clear instructions are provided for manual installation
-- You can cancel at any time with Ctrl+C
-
-## Automatic Installation in Scripts
-
-If you want to use InterDIFNet in automated scripts where user input isn't possible, install all dependencies first:
-
-```bash
-pip install numpy pandas tensorflow scikit-learn matplotlib seaborn scikit-multilearn networkx
-```
-
-Then your script will import without prompts.

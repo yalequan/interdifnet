@@ -92,10 +92,7 @@ Within the InterDIFNet_Function_Calls.py are the functions needed to run the sim
 
 ## Method Details
 
-InterDIFNet employs a multi-label neural network architecture to simultaneously:
-- Identify items exhibiting differential item functioning
-- Detect which intersectional groups experience DIF
-- Quantify the magnitude of DIF effects
+InterDIFNet employs a multi-label neural network architecture to detectcintersectional DIF between many small groups simultaneously.
 
 The approach is specifically designed for small sample scenarios where traditional methods may lack statistical power.
 
@@ -104,7 +101,6 @@ The approach is specifically designed for small sample scenarios where tradition
 This project is licensed under the GNU General Public License v3.0 or later (GPL-3.0-or-later).
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/.
 
 ## Contact
 

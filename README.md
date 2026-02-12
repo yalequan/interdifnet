@@ -2,6 +2,19 @@
 
 A multi-label neural network approach for detecting small sample intersectional differential item functioning (DIF).
 
+## Citation
+
+If you use InterDIFNet in your research, please cite:
+
+```bibtex
+@article{interdifnet,
+  title= {Using multi-label classification neural networks to detect intersectional DIF},
+  author= {Yale Quan and Chun Wang},
+  journal={British Journal of Mathematical and Statistical Psychology},
+  year= {In Press}
+}
+```
+
 ## Overview
 
 InterDIFNet addresses the challenge of detecting intersectional differential item functioning in small sample settings using deep learning. Traditional DIF detection methods often struggle with limited data and multiple intersecting demographic factors. This repository provides a neural network-based solution designed to handle these complexities.
@@ -85,19 +98,6 @@ InterDIFNet employs a multi-label neural network architecture to simultaneously:
 - Quantify the magnitude of DIF effects
 
 The approach is specifically designed for small sample scenarios where traditional methods may lack statistical power.
-
-## Citation
-
-If you use InterDIFNet in your research, please cite:
-
-```bibtex
-@article{interdifnet,
-  title= {Using multi-label classification neural networks to detect intersectional DIF},
-  author= {Yale Quan and Chun Wang},
-  journal={British Journal of Mathematical and Statistical Psychology},
-  year= {In Press}
-}
-```
 
 ## License
 

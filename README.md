@@ -14,6 +14,18 @@ If you use InterDIFNet in your research, please cite:
   year= {In Press}
 }
 ```
+and 
+```bibtex
+@misc{https://doi.org/10.5281/zenodo.18626820,
+  doi = {10.5281/ZENODO.18626820},
+  url = {https://zenodo.org/doi/10.5281/zenodo.18626820},
+  author = {Yale Quan,  },
+  title = {yalequan/interdifnet: InterDIFNet Initial Release V1.0.0},
+  publisher = {Zenodo},
+  year = {2026},
+  copyright = {GNU Affero General Public License v3.0 only}
+}
+```
 
 ## Overview
 

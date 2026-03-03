@@ -11,6 +11,8 @@
 !*.py
 !*.txt
 !*.md
+!*.keras
+!*.pkl
 
 # ============================================
 # EXCEPT: Track files in all subdirectories

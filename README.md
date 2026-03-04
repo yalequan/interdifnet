@@ -51,6 +51,7 @@ InterDIFNet/
 ├───── Ten_Group_Training_Data_Parameters.R       # R script to estmate the training data parameters
 ├───── Ten_Group_Testing_Data_Generation.R        # R script to generate testing data
 ├───── Ten_Group_Testing_Data_Parameters.R        # R script to estmate the testing data parameters
+├── interdifnet_preprocessing.R                   # R script to generate InterDIFNet data from user provided data
 ├── InterDIFNet Package Dependencies.md           # Markdown file explaining how package dependencies are handled
 ├── InterDIFNet.py                                # Python code for main InterDIFNet functions
 ├── InterDIFNet_Function_Calls.py                 # Python code with InterDIFNet function calls
@@ -76,7 +77,7 @@ The following packages are automatically managed:
 | Scikit-multilearn | `scikit-multilearn` | `skmultilearn` |
 | NetworkX | `networkx` | `networkx` |
 
-## Usage
+## Simulation Study Usage
 
 ### 1. Generate Training Data
 
@@ -88,7 +89,11 @@ The testing data generation scripts with each folder create training data with s
 
 ### 3. Run Simulation Study
 
-Within the InterDIFNet_Function_Calls.py are the functions needed to run the simulation study
+Use `InterDIFNet_Function_Calls.py` to:
+* Train the neural network
+* Evaluate power and Type I error
+* Generate DIF detection results
+* Produce visualization outputs
 
 **Expected outputs:**
 - Model performance metrics (Power and Type 1 Error)
@@ -96,11 +101,106 @@ Within the InterDIFNet_Function_Calls.py are the functions needed to run the sim
 - Visualization plots
 - Summary statistics
 
-## Workflow
+**Workflow**
 
 1. **Generate Training Data**: Create a large synthetic dataset with known DIF patterns
 2. **Generate Testing Data**: Create test datasets to evaluate model performance
 3. **Run Simulation**: Train the neural network and evaluate its ability to detect intersectional DIF
+
+## Using Your Own Observed Data
+
+In addition to simulation studies, users may preprocess real observed item response data for use with the InterDIFNet neural model.
+
+### Feature preprocessing is handled by:
+
+Feature preprocessing is handled by:  `interdifnet_preprocessing.R`
+
+**Example Function Call**
+```r
+# Load feature generator
+source("interdifnet_preprocessing.R")
+
+# Load user datasets
+item_matrix <- read.csv("responses.csv") # Item response matrix
+group_data  <- read.csv("groups.csv") # Column denoting group membership
+group_vector <- as.numeric(group_data[[1]])
+
+# Generate TLP-based InterDIFNet features
+result <- interdifnet_preprocessing(
+  item_responses = item_matrix,
+  group_assignments = group_vector,
+  num_groups = 3,
+  output_path = "interdifnet_features.csv",
+  seed = 123
+)
+
+# Inspect feature matrix
+head(result$features)
+```
+
+### Required Input Files
+
+Two CSV files are required:
+
+1. Binary Item Response File (responses.csv)
+* Rows = examinees
+* Columns = items
+
+
+**Example:**
+
+| Item1 | Item2 | Item3 |
+|-------|-------|-------|
+| 1     | 0     | 1     |
+| 0     | 1     | 1     |
+| 1     | 1     | 0     |
+
+2. Group Assignment File (groups.csv)
+
+Single column
+* Integers denoting group membership
+* Must match number of rows in response file
+
+**Example (3-group model):** 
+
+| group |
+|-------|
+| 1     |
+| 2     |
+| 1     |
+
+Supported configurations:
+
+3-group model
+
+10-group model
+
+## DIF Detection
+
+After generating the feature file, users can apply a trained InterDIFNet model using the DIF_Detection function inside `InterDIFNet.py`
+
+**Example Usage**
+```py
+from InterDIFNet import DIF_Detection
+
+DIF_Detection(
+    data_filename="interdifnet_features.csv",
+    model_name="InterDIFNet_Three_Group_model",
+    verbose=True,
+    save_results=True,
+    output_filename="interdifnet_results.csv"
+)
+```
+
+If only one trained model exists in `./models/`, `model_name` may be omitted.
+
+**Full Workflow Summary (Observed Data)**
+
+1) Prepare binary item response matrix
+2) Prepare group assignment vector
+3) Run `interdifnet_preprocessing()` in R
+4) Run `DIF_Detection()` in Python
+5) Interpret DIF classification results
 
 ## Method Details
 

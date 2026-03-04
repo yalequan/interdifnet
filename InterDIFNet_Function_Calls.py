@@ -58,6 +58,13 @@ training_results, testing_results = Simulation_Study(
 print("Three Group Results")
 print(testing_results)
 
+training_results = train_InterDIFNet(groups = "Four",
+    feature_selection = "TLP",
+    merged = True,
+    save_model= True,
+    model_name= "InterDIFNet_Four_Group",
+    model_dir= ".models/")
+
 
 # Empirical Example
 

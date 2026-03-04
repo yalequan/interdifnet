@@ -5,7 +5,7 @@
 # Supports ONLY 3-group and 10-group configurations.
 # =============================================================================
 
-difnet_generate_features <- function(
+preprocess_interdifnet <- function(
     item_responses,
     group_assignments,
     num_groups = NULL,

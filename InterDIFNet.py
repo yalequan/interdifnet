@@ -135,6 +135,7 @@ import tensorflow.keras.backend as K  # noqa: E402
 import gc  # noqa: E402
 import tensorflow as tf  # noqa: E402
 from pathlib import Path  # noqa: E402
+import re  # noqa: E402
 
 # Loss Function
 
@@ -400,7 +401,11 @@ def load_training_data(groups, training_features=None,
     data_folder = Path(folder_name)
     
     # Construct file patterns
-    data_pattern = f"{groups}_Group_Training_data_ALL_Replication*.csv"
+    if isinstance(training_features, str) and training_features.upper() == "TLP":
+        data_pattern = f"{groups}_Group_Training_data_TLP_Replication*.csv"
+        print(f"Using TLP-specific training files: pattern={data_pattern}")
+    else:
+        data_pattern = f"{groups}_Group_Training_data_ALL_Replication*.csv"
     labels_pattern = f"{groups}_Group_Training_labels_Replication*.csv"
                        
     # Construct full file patterns with the folder path
@@ -421,12 +426,30 @@ def load_training_data(groups, training_features=None,
     training_csv_files = sorted(glob.glob(str(data_file_pattern)), 
                                key=lambda x: int(x.split('Replication')[1].split('.')[0]))
     training_csv_files = training_csv_files[:replications]
+    if len(training_csv_files) == 0:
+        folder_exists = data_folder.exists()
+        sample_files = list(data_folder.glob('*.csv')) if folder_exists else []
+        raise FileNotFoundError(
+            f"No training CSV files found for pattern: {data_file_pattern}\n"
+            f"Folder exists: {folder_exists}\n"
+            f"Sample CSV files in folder: {sample_files}\n"
+            f"Please generate or place files matching: {data_pattern} in folder: {data_folder}"
+        )
     training_data = pd.concat((pd.read_csv(file) for file in training_csv_files), ignore_index=True)
     
     # Load training labels
     training_labels_csv_files = sorted(glob.glob(str(labels_file_pattern)), 
                                      key=lambda x: int(x.split('Replication')[1].split('.')[0]))
     training_labels_csv_files = training_labels_csv_files[:replications]
+    if len(training_labels_csv_files) == 0:
+        folder_exists = data_folder.exists()
+        sample_files = list(data_folder.glob('*.csv')) if folder_exists else []
+        raise FileNotFoundError(
+            f"No training LABEL CSV files found for pattern: {labels_file_pattern}\n"
+            f"Folder exists: {folder_exists}\n"
+            f"Sample CSV files in folder: {sample_files}\n"
+            f"Please generate or place files matching: {labels_pattern} in folder: {data_folder}"
+        )
     training_labels = pd.concat((pd.read_csv(file) for file in training_labels_csv_files), ignore_index=True)
     
     # Clean data
@@ -452,11 +475,9 @@ def load_training_data(groups, training_features=None,
         # For multiple group comparisons (e.g., Ten groups = 45 pairwise comparisons)
         group_ids = set()
         for label in temp_cols:
-            pair = label.split('DIF_b_')[1]  # e.g., 'Group1Group2'
-            # Extract individual group numbers by splitting on 'Group' and filtering out empty strings
-            for g in pair.split('Group'):
-                if g:
-                    group_ids.add(g)
+            # Handles both 'DIF_b_Group1Group2' and 'DIF_b_Group1_Group2' formats
+            for g in re.findall(r'Group(\d+)', label):
+                group_ids.add(g)
         num_groups = len(group_ids)
     else:
         # For simple two-group comparison
@@ -1773,10 +1794,9 @@ def evaluate_models_on_test_sets(groups, model_dif_a, model_dif_b, scaler,
     if len(set1_cols) > 1:
         group_ids = set()
         for label in set1_cols:
-            pair = label.split('DIF_a_')[1]
-            for g in pair.split('Group'):
-                if g:
-                    group_ids.add(g)
+            # Handles both 'DIF_a_Group1Group2' and 'DIF_a_Group1_Group2' formats
+            for g in re.findall(r'Group(\d+)', label):
+                group_ids.add(g)
         num_groups = len(group_ids)
     else:
         num_groups = 2

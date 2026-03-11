@@ -169,11 +169,7 @@ Single column
 | 2     |
 | 1     |
 
-Supported configurations:
-
-3-group model
-
-10-group model
+Please check the models folder to determine the number of groups supported.
 
 ## DIF Detection
 

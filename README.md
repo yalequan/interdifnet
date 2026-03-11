@@ -1,6 +1,6 @@
 # InterDIFNet
 
-A multi-label neural network approach for detecting small sample intersectional differential item functioning (DIF).
+A multi-label neural network approach for detecting small sample intersectional differential item functioning (DIF). This is the code repository needed to reproduce the results from Quan & Wang (2026) cited below.
 
 ## Citation
 

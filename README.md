@@ -87,10 +87,14 @@ The following packages are automatically managed:
   - Within the folder corresponding to the group setup you want to simulate.
     - Use the `_Training_Data_Parameters.R` script to estimate the features used to train the network.
     - Use the training data generation `_Training_Data_Generation.R` script within the training data folders.
+    - Use the `_Data_Files_For_Python.R` script to generate the CSV files python needs.
+    - **Note**: This version of InterDIFNet is sensitive to folder structure. Please ensure you did not modify the folder names after downloading. Future versions will address this limitation.
 3. **Generate Testing Data**: Create test datasets to evaluate model performance
   - Within the dataset folder
     - Use the `_Training_Data_Parameters.R` script to estimate the features used to train the network.
     - Use the `_Testing_Data_Generation.R` and `Testing_Data_Parameters.R` to generate and estimate the testing data features.
+    - - Use the `_Data_Files_For_Python.R` script to generate the CSV files python needs.
+    - **Note**: This version of InterDIFNet is sensitive to folder structure. Please ensure you did not modify the folder names after downloading. Future versions will address this limitation.
 4. **Run Simulation**: Train the neural network and evaluate its ability to detect intersectional DIF
   - Within `InterDIFNet_Function_Calls.py` find the `train_InterDIFNet()` function that corresponds to the group size you generated data for
   - Then run the `Simulation_Study()` function

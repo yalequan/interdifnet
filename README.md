@@ -80,7 +80,7 @@ The following packages are automatically managed:
 
 ## Simulation Study Workflow
 
-**Note** When you download the InterDIFNet folder please respect the folder hierarchy. This current version is sensitive to folder naming.
+**Note** When you download the InterDIFNet folder please respect the folder hierarchy and naming. This current version is sensitive to folder naming.
 
 1. **Download InterDIFNet**: Download the InterDIFNet folder to your computer. 
 2. **Generate Training Data**: Create a large synthetic dataset with known DIF patterns.

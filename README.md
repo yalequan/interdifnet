@@ -80,20 +80,21 @@ The following packages are automatically managed:
 
 ## Simulation Study Workflow
 
-* **Note** When you download the InterDIFNet folder please respect the folder hierarchy. This current version is sensitive to folder naming.
+**Note** When you download the InterDIFNet folder please respect the folder hierarchy. This current version is sensitive to folder naming.
 
-1. **Generate Training Data**: Create a large synthetic dataset with known DIF patterns.
-  - Download the folder corresponding to the group setup you want to simulate.
+1. **Download InterDIFNet**: Download the InterDIFNet folder to your computer. 
+2. **Generate Training Data**: Create a large synthetic dataset with known DIF patterns.
+  - Within the folder corresponding to the group setup you want to simulate.
     - Use the `_Training_Data_Parameters.R` script to estimate the features used to train the network.
     - Use the training data generation `_Training_Data_Generation.R` script within the training data folders.
-2. **Generate Testing Data**: Create test datasets to evaluate model performance
+3. **Generate Testing Data**: Create test datasets to evaluate model performance
   - Within the dataset folder
     - Use the `_Training_Data_Parameters.R` script to estimate the features used to train the network.
     - Use the `_Testing_Data_Generation.R` and `Testing_Data_Parameters.R` to generate and estimate the testing data features.
-3. **Run Simulation**: Train the neural network and evaluate its ability to detect intersectional DIF
+4. **Run Simulation**: Train the neural network and evaluate its ability to detect intersectional DIF
   - Within `InterDIFNet_Function_Calls.py` find the `train_InterDIFNet()` function that corresponds to the group size you generated data for
   - Then run the `Simulation_Study()` function
-4. **Expected Output**: DIF Detection Results and Type 1 Error and Power from the simulation study
+5. **Expected Output**: DIF Detection Results and Type 1 Error and Power from the simulation study
 
 ## Using Your Own Observed Data
 

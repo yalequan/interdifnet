@@ -91,7 +91,6 @@ The following packages are automatically managed:
     - Use the `_Training_Data_Parameters.R` script to estimate the features used to train the network.
     - Use the `_Testing_Data_Generation.R` and `Testing_Data_Parameters.R` to generate and estimate the testing data features.
 3. **Run Simulation**: Train the neural network and evaluate its ability to detect intersectional DIF
-  - Download the `InterDIFNet_Function_Calls.py` and `InterDIFNet_Function_Calls.py` python files
   - Within `InterDIFNet_Function_Calls.py` find the `train_InterDIFNet()` function that corresponds to the group size you generated data for
   - Then run the `Simulation_Study()` function
 4. **Expected Output**: DIF Detection Results and Type 1 Error and Power from the simulation study

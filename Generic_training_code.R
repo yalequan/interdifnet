@@ -9,8 +9,11 @@ library(DFIT)
 library(dplyr)
 
 # Main Loop: Process All Training Replications ----
-S <- 5
+S <- 10 # Number of groups
 J <- 10 # Number of items
+
+# Set working directory to the location of the training data files
+# setwd("path/to/training/data")
 
 for (r in 1:500) {
 

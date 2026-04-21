@@ -1157,7 +1157,7 @@ def find_optimal_thresholds(model_dif_a, model_dif_b, X_val_scaled,
 def complete_training_pipeline(groups, loss, replications=500, epochs=200, batch_size=32, 
                               training_features=None,
                               plot_results=True, threshold_method='macro_f1',
-                              val_split=False, merged=False):
+                              val_split=False, merged=False, model_name=None):
     """Complete training pipeline from data loading to model training and threshold optimization.
     
     Args:
@@ -1176,6 +1176,8 @@ def complete_training_pipeline(groups, loss, replications=500, epochs=200, batch
             Defaults to False.
         merged (bool, optional): If True, uses merged model architecture. If False, uses
             separate models. Defaults to False.
+        model_name (str, optional): Custom name for the model used in threshold filename.
+            If None, uses groups name. Defaults to None.
     
     Returns:
         dict: Dictionary containing all trained components including models, scaler,
@@ -1259,6 +1261,17 @@ def complete_training_pipeline(groups, loss, replications=500, epochs=200, batch
     print(f"Training complete ({model_type} model)")
     print(f"DIF_a optimal threshold: {opt_thr_a:.3f}")
     print(f"DIF_b optimal threshold: {opt_thr_b:.3f}")
+    
+    # Save thresholds to CSV file
+    print("Saving thresholds now...")
+    threshold_df = pd.DataFrame([{
+        'Threshold_a': opt_thr_a,
+        'Threshold_b': opt_thr_b
+    }])
+    base_name = model_name if model_name else groups
+    output_filename = f"Optimal_Thresholds_{base_name}.csv"
+    threshold_df.to_csv(output_filename, index=False)
+    print(f"Thresholds saved to: {output_filename}")
      
     if merged:
         return {
@@ -2191,7 +2204,8 @@ def train_InterDIFNet(groups,
         training_results = complete_training_pipeline(groups=groups, loss=loss,
                                                       training_features=selected_features,
                                                       val_split=val_split,
-                                                      merged=merged)
+                                                      merged=merged,
+                                                      model_name=model_name)
         
         if save_model:
             save_trained_model(training_results, groups, model_dir=model_dir, merged=merged, model_name=model_name)
@@ -2203,7 +2217,8 @@ def train_InterDIFNet(groups,
                                                       loss=loss, 
                                                       training_features="TLP" if feature_selection == "TLP" else None,
                                                       val_split=val_split,
-                                                      merged=merged)
+                                                      merged=merged,
+                                                      model_name=model_name)
         
         if save_model:
             save_trained_model(training_results, groups, model_dir=model_dir, merged=merged, model_name=model_name)
@@ -2486,7 +2501,8 @@ def Simulation_Study(groups, sizes,
         training_results = complete_training_pipeline(groups=groups, loss=loss,
                                                       training_features=selected_features,
                                                       val_split=val_split,
-                                                      merged=merged)
+                                                      merged=merged,
+                                                      model_name=model_name)
         
         if save_model:
             save_trained_model(training_results, groups, model_dir=model_dir, merged=merged, model_name=model_name)
@@ -2512,7 +2528,8 @@ def Simulation_Study(groups, sizes,
                                                       loss=loss, 
                                                       training_features="TLP" if feature_selection == "TLP" else None,
                                                       val_split=val_split,
-                                                      merged=merged)
+                                                      merged=merged,
+                                                      model_name=model_name)
         
         if save_model:
             save_trained_model(training_results, groups, model_dir=model_dir, merged=merged, model_name=model_name)
